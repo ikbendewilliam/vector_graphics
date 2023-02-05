@@ -7,14 +7,13 @@ import 'dart:io';
 import 'dart:isolate';
 import 'dart:typed_data';
 
-import 'package:vector_graphics_compiler/vector_graphics_compiler.dart';
 import 'package:vector_graphics_compiler/src/debug_format.dart';
+import 'package:vector_graphics_compiler/vector_graphics_compiler.dart';
 
 /// The isolate processor distributes SVG compilation across multiple isolates.
 class IsolateProcessor {
   /// Create a new [IsolateProcessor].
-  IsolateProcessor(this._libpathops, this._libtessellator, int concurrency)
-      : _pool = Pool(concurrency);
+  IsolateProcessor(this._libpathops, this._libtessellator, int concurrency) : _pool = Pool(concurrency);
 
   final String? _libpathops;
   final String? _libtessellator;
@@ -94,9 +93,7 @@ class IsolateProcessor {
     try {
       resource = await _pool.request();
       await Isolate.run(() {
-        if (maskingOptimizerEnabled ||
-            clippingOptimizerEnabled ||
-            overdrawOptimizerEnabled) {
+        if (maskingOptimizerEnabled || clippingOptimizerEnabled || overdrawOptimizerEnabled) {
           _loadPathOps(libpathops);
         }
         if (tessellate) {

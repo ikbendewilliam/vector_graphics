@@ -5,10 +5,7 @@
 import 'dart:io';
 
 import 'package:args/args.dart';
-import 'package:vector_graphics_compiler/src/svg/colors.dart';
 import 'package:vector_graphics_compiler/vector_graphics_compiler.dart';
-
-import 'util/isolate_processor.dart';
 
 final ArgParser argParser = ArgParser()
   ..addOption(
@@ -77,23 +74,17 @@ final ArgParser argParser = ArgParser()
       abbr: 'k',
       help: 'The maximum number of SVG processing isolates to spawn at once. '
           'If not provided, defaults to the number of cores.')
-  ..addFlag('dump-debug',
-      help:
-          'Dump a human readable debugging format alongside the compiled asset',
-      hide: true)
+  ..addFlag('dump-debug', help: 'Dump a human readable debugging format alongside the compiled asset', hide: true)
   ..addOption(
     'output',
     abbr: 'o',
-    help:
-        'The path to a file where the resulting vector_graphic will be written.\n'
+    help: 'The path to a file where the resulting vector_graphic will be written.\n'
         'If not provided, defaults to <input-file>.vec',
   );
 
 void validateOptions(ArgResults results) {
-  if (results.wasParsed('input-dir') &&
-      (results.wasParsed('input') || results.wasParsed('output'))) {
-    print(
-        '--input-dir cannot be combined with --input and/or --output options.');
+  if (results.wasParsed('input-dir') && (results.wasParsed('input') || results.wasParsed('output'))) {
+    print('--input-dir cannot be combined with --input and/or --output options.');
     exit(1);
   }
   if (!results.wasParsed('input') && !results.wasParsed('input-dir')) {
@@ -111,9 +102,7 @@ SvgTheme _parseTheme(ArgResults results) {
   return SvgTheme(
     currentColor: currentColor,
     fontSize: double.tryParse(results['font-size'] as String) ?? 14,
-    xHeight: results.wasParsed('x-height')
-        ? double.tryParse(results['x-height'] as String)
-        : null,
+    xHeight: results.wasParsed('x-height') ? double.tryParse(results['x-height'] as String) : null,
   );
 }
 
@@ -135,8 +124,7 @@ Future<void> main(List<String> args) async {
       print('input-dir ${directory.path} does not exist.');
       exit(1);
     }
-    for (final File file
-        in directory.listSync(recursive: true).whereType<File>()) {
+    for (final File file in directory.listSync(recursive: true).whereType<File>()) {
       if (!file.path.endsWith('.svg')) {
         continue;
       }
@@ -145,8 +133,7 @@ Future<void> main(List<String> args) async {
     }
   } else {
     final String inputFilePath = results['input'] as String;
-    final String outputFilePath =
-        results['output'] as String? ?? '$inputFilePath.vec';
+    final String outputFilePath = results['output'] as String? ?? '$inputFilePath.vec';
     pairs.add(Pair(inputFilePath, outputFilePath));
   }
 

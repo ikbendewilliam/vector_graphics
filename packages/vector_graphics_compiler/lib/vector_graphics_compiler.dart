@@ -5,33 +5,33 @@
 import 'dart:typed_data';
 
 import 'package:vector_graphics_codec/vector_graphics_codec.dart';
-import 'src/geometry/pattern.dart';
-import 'src/geometry/matrix.dart';
+
 import 'src/geometry/image.dart';
-import 'src/geometry/vertices.dart';
+import 'src/geometry/matrix.dart';
 import 'src/geometry/path.dart';
+import 'src/geometry/pattern.dart';
+import 'src/geometry/vertices.dart';
 import 'src/paint.dart';
 import 'src/svg/color_mapper.dart';
-import 'src/svg/theme.dart';
 import 'src/svg/parser.dart';
+import 'src/svg/theme.dart';
 import 'src/vector_instructions.dart';
 
+export 'src/_initialize_path_ops_io.dart' if (dart.library.html) 'src/_initialize_path_ops_web.dart';
+export 'src/_initialize_tessellator_io.dart' if (dart.library.html) 'src/_initialize_tessellator_web.dart';
 export 'src/geometry/basic_types.dart';
 export 'src/geometry/matrix.dart';
 export 'src/geometry/path.dart';
 export 'src/geometry/vertices.dart';
 export 'src/paint.dart';
 export 'src/svg/color_mapper.dart';
-export 'src/svg/theme.dart';
-export 'src/svg/resolver.dart';
-export 'src/vector_instructions.dart';
-export 'src/svg/tessellator.dart' show initializeLibTesselator;
+export 'src/svg/colors.dart';
 export 'src/svg/path_ops.dart' show initializeLibPathOps;
-
-export 'src/_initialize_tessellator_io.dart'
-    if (dart.library.html) 'src/_initialize_tessellator_web.dart';
-export 'src/_initialize_path_ops_io.dart'
-    if (dart.library.html) 'src/_initialize_path_ops_web.dart';
+export 'src/svg/resolver.dart';
+export 'src/svg/tessellator.dart' show initializeLibTesselator;
+export 'src/svg/theme.dart';
+export 'src/util/isolate_processor.dart';
+export 'src/vector_instructions.dart';
 
 /// Parses an SVG string into a [VectorInstructions] object, with all optional
 /// optimizers disabled.
@@ -100,8 +100,7 @@ void _encodeShader(
       fromY: shader.from.y,
       toX: shader.to.x,
       toY: shader.to.y,
-      colors: Int32List.fromList(
-          <int>[for (Color color in shader.colors!) color.value]),
+      colors: Int32List.fromList(<int>[for (Color color in shader.colors!) color.value]),
       offsets: Float32List.fromList(shader.offsets!),
       tileMode: shader.tileMode!.index,
     );
@@ -113,8 +112,7 @@ void _encodeShader(
       radius: shader.radius,
       focalX: shader.focalPoint?.x,
       focalY: shader.focalPoint?.y,
-      colors: Int32List.fromList(
-          <int>[for (Color color in shader.colors!) color.value]),
+      colors: Int32List.fromList(<int>[for (Color color in shader.colors!) color.value]),
       offsets: Float32List.fromList(shader.offsets!),
       tileMode: shader.tileMode!.index,
       transform: _encodeMatrix(shader.transform),
@@ -284,11 +282,9 @@ Uint8List _encodeInstructions(VectorInstructions instructions) {
         }
         break;
       case DrawCommandType.vertices:
-        final IndexedVertices vertices =
-            instructions.vertices[command.objectId!];
+        final IndexedVertices vertices = instructions.vertices[command.objectId!];
         final int fillId = fillIds[command.paintId]!;
-        codec.writeDrawVertices(
-            buffer, vertices.vertices, vertices.indices, fillId);
+        codec.writeDrawVertices(buffer, vertices.vertices, vertices.indices, fillId);
         break;
       case DrawCommandType.saveLayer:
         codec.writeSaveLayer(buffer, fillIds[command.paintId]!);
@@ -304,8 +300,7 @@ Uint8List _encodeInstructions(VectorInstructions instructions) {
         break;
 
       case DrawCommandType.pattern:
-        final PatternData patternData =
-            instructions.patterns[command.objectId!];
+        final PatternData patternData = instructions.patterns[command.objectId!];
         codec.writePattern(
           buffer,
           patternData.x,
@@ -335,8 +330,7 @@ Uint8List _encodeInstructions(VectorInstructions instructions) {
         }
         break;
       case DrawCommandType.image:
-        final DrawImageData drawImageData =
-            instructions.drawImages[command.objectId!];
+        final DrawImageData drawImageData = instructions.drawImages[command.objectId!];
         codec.writeDrawImage(
           buffer,
           drawImageData.id,

@@ -1,0 +1,41 @@
+name: vector_graphics_generator
+description: A package for Flutter that converts SVGs automatically into vector_graphics.
+version: 0.0.1
+homepage: https://github.com/dnfield/vector_graphics
+
+environment:
+  sdk: ">=2.17.0 <3.0.0"
+  flutter: ">=3.5.0-0"
+
+dependencies:
+  analyzer: ^5.0.0
+  build: ^2.3.1
+  code_builder: ^4.4.0
+  collection: ^1.16.0
+  dart_style: ^2.2.4
+  flutter:
+    sdk: flutter
+  path: ^1.8.2
+  source_gen: ^1.2.6
+  vector_graphics_compiler: 1.0.1
+  vector_graphics_generator_annotations: 0.0.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^1.0.0
+
+# Comment out before publishing
+dependency_overrides:
+  vector_graphics_compiler:
+    path: ../vector_graphics_compiler
+  vector_graphics_generator_annotations:
+    path: ../vector_graphics_generator_annotations
+
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:
