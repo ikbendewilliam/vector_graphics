@@ -1,7 +1,0 @@
-builders:
-  vector_graphics_generator:
-    import: "package:vector_graphics_generator/builder.dart"
-    builder_factories: ["vectorGraphicsBuilder"]
-    build_extensions: { ".dart": [".vector_graphics_assets.dart", ".vec"] }
-    auto_apply: dependents
-    build_to: source

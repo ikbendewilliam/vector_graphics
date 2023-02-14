@@ -134,41 +134,50 @@ class Pair {
   final String outputPath;
 }
 
+/// a pool that handles concurrency.
 class Pool {
+  /// Create a new [Pool] with the given concurrency.
   Pool(this.concurrency);
 
+  /// The number of concurrent tasks.
   final int concurrency;
-  final List<PoolHandle> active = <PoolHandle>[];
-  final List<Completer<PoolHandle>> pending = <Completer<PoolHandle>>[];
 
+  final List<PoolHandle> _active = <PoolHandle>[];
+  final List<Completer<PoolHandle>> _pending = <Completer<PoolHandle>>[];
+
+  /// Request a handle to the pool.
   Future<PoolHandle> request() async {
-    if (active.length < concurrency) {
+    if (_active.length < concurrency) {
       final PoolHandle handle = PoolHandle(this);
-      active.add(handle);
+      _active.add(handle);
       return handle;
     }
     final Completer<PoolHandle> completer = Completer<PoolHandle>();
-    pending.add(completer);
+    _pending.add(completer);
     return completer.future;
   }
 
   void _clearAndCheckPending(PoolHandle oldHandle) {
-    assert(active.contains(oldHandle));
-    active.remove(oldHandle);
-    while (active.length < concurrency && pending.isNotEmpty) {
-      final Completer<PoolHandle> completer = pending.removeAt(0);
+    assert(_active.contains(oldHandle));
+    _active.remove(oldHandle);
+    while (_active.length < concurrency && _pending.isNotEmpty) {
+      final Completer<PoolHandle> completer = _pending.removeAt(0);
       final PoolHandle handle = PoolHandle(this);
-      active.add(handle);
+      _active.add(handle);
       completer.complete(handle);
     }
   }
 }
 
+/// A handle to a pool.
 class PoolHandle {
+  /// Create a new [PoolHandle] for the given [Pool].
   PoolHandle(this.pool);
 
+  /// The pool this handle is associated with.
   Pool? pool;
 
+  /// Release the handle back to the pool.
   void release() {
     assert(pool != null);
     pool?._clearAndCheckPending(this);
